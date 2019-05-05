@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="editLineAmount()"><ion-icon name="create"></ion-icon></ion-button>
+    </ion-buttons>
+    <ion-title>
+      Startseite <br>
+      <small>{{ dateObject | date:'w' }}. KW</small>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="grid">
+    <div class="heading">
+      <p>Stunde</p>
+    </div>
+    <div class="heading">
+      <p>Mo.</p>
+    </div>
+    <div class="heading">
+      <p>Di.</p>
+    </div>
+    <div class="heading">
+      <p>Mi.</p>
+    </div>
+    <div class="heading">
+      <p>Do.</p>
+    </div>
+    <div class="heading">
+      <p>Fr.</p>
+    </div>
+  </div>
+  <div class="grid" *ngFor="let hour of numbers">
+    <div class="time">
+      <p>{{hour}}</p>
+    </div>
+    <div id='{{ "mo-"+hour }}' class="block" (click)='editLine($event)'></div>
+    <div id='{{ "di-"+hour }}' class="block" (click)="editLine($event)"></div>
+    <div id='{{ "mi-"+hour }}' class="block" (click)="editLine($event)"></div>
+    <div id='{{ "do-"+hour }}' class="block" (click)="editLine($event)"></div>
+    <div id='{{ "fr-"+hour }}' class="block" (click)="editLine($event)"></div>
+  </div>
+</ion-content>

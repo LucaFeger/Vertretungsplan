@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Unterrichtszeiten</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-label>{{type}} Stundenplan</ion-label>
+    <ion-toggle [(ngModel)]="normal" checked=true (ionChange)="changeTitle()"></ion-toggle>
+  </ion-item>
+
+  <ion-list *ngIf="normal; else shortplan">
+    <ion-item >
+      <ion-label>1. Stunde</ion-label><span item-end>08:00 - 08:45</span>
+    </ion-item>
+    <ion-item >
+      <ion-label>2-3. Stunde</ion-label><span item-end>08:55 - 10:25</span>
+    </ion-item>
+    <ion-item >
+      <ion-label><b>Pause</b></ion-label><span item-end>10:25 - 10:50</span>
+    </ion-item>
+    <ion-item >
+      <ion-label>4-5. Stunde</ion-label><span item-end>10:50 - 12:20</span>
+    </ion-item>
+    <ion-item >
+      <ion-label>6. Stunde</ion-label><span item-end>12:30 - 13:15</span>
+    </ion-item>
+    <ion-item >
+      <ion-label><b>Mittagspause</b></ion-label><span item-end>13:15 - 14:15</span>
+    </ion-item>
+    <ion-item >
+      <ion-label>7-8. Stunde</ion-label><span item-end>14:15 - 15:45</span>
+    </ion-item>
+    <ion-item >
+      <ion-label>9-10. Stunde</ion-label><span item-end>15:55 - 17:25</span>
+    </ion-item>
+  </ion-list>
+
+  <ng-template #shortplan>
+    <ion-list>
+      <ion-item >
+        <ion-label>1. Stunde</ion-label><span item-end>08:00 - 08:45</span>
+      </ion-item>
+      <ion-item >
+        <ion-label>2-3. Stunde</ion-label><span item-end>08:50 - 09:50</span>
+      </ion-item>
+      <ion-item >
+        <ion-label><b>Pause</b></ion-label><span item-end>09:50 - 10:15</span>
+      </ion-item>
+      <ion-item >
+        <ion-label>4-5. Stunde</ion-label><span item-end>10:15 - 11:15</span>
+      </ion-item>
+      <ion-item >
+        <ion-label>6. Stunde</ion-label><span item-end>11:20 - 12:05</span>
+      </ion-item>
+      <ion-item >
+        <ion-label><b>Mittagspause</b></ion-label><span item-end>---</span>
+      </ion-item>
+      <ion-item >
+        <ion-label>7-8. Stunde</ion-label><span item-end>12:15 - 13:15</span>
+      </ion-item>
+      <ion-item >
+        <ion-label>9-10. Stunde</ion-label><span item-end>13:30 - 14:30</span>
+      </ion-item>
+    </ion-list>
+</ng-template>
+</ion-content>

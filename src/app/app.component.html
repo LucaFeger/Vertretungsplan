@@ -1,0 +1,34 @@
+<ion-app>
+
+<ion-menu side="start" menuId="menu" contentId="router" type="push">
+    <ion-header>
+      <ion-toolbar>
+          <ion-title>Menü</ion-title>
+      </ion-toolbar>
+    </ion-header>
+  
+    <ion-content>
+      <ion-list>
+        <ion-menu-toggle auto-hide="false" *ngFor="let page of getPages(true)">
+          <ion-item lines="none" button [routerLink]="page.path" [routerLinkActive]="['active']" routerDirection="root">
+            <ion-icon name="{{ page.icon }}" style="margin-right: 10px;"></ion-icon>
+            <ion-label>{{ page.title }}</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+  
+    <ion-footer>
+      <ion-list>
+        <ion-menu-toggle auto-hide="false" *ngFor="let page of getPages(false)">
+          <ion-item lines="none" button [routerLink]="page.path" [routerLinkActive]="['active']" routerDirection="root">
+            <ion-icon name="{{ page.icon }}" style="margin-right: 10px;"></ion-icon>
+            <ion-label>{{ page.title }}</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+        </ion-list>
+    </ion-footer>
+  
+  </ion-menu>
+  <ion-router-outlet id="router"></ion-router-outlet>
+</ion-app>

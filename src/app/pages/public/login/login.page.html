@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Anmeldung</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <form [formGroup]="loginForm" (ngSubmit)="login()" *ngIf="loginForm != null">
+    <ion-item>
+      <ion-label>Benutzername</ion-label>
+      <ion-input type="text" formControlName="username"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Passwort</ion-label>
+      <ion-input type="password" formControlName="password"></ion-input>
+    </ion-item>
+    <ion-item *ngIf="type === 'teacher'">
+      <ion-label>Lehrer Key</ion-label>
+      <ion-input type="password" formControlName="key"></ion-input>
+    </ion-item>
+  
+    <ion-radio-group (ionChange)="changeType();" [(ngModel)]="type" formControlName="type">
+      <ion-row>
+        <ion-col>
+          <ion-label>Schüler</ion-label>
+          <ion-radio value="student"></ion-radio>
+        </ion-col>
+        <ion-col class="grid-second">
+          <ion-label>Lehrer</ion-label>
+          <ion-radio value="teacher"></ion-radio>
+        </ion-col>
+    </ion-row>
+    </ion-radio-group>
+    <ion-button expand="block" type="submit" [disabled]="!loginForm.valid">Anmelden</ion-button>
+</form>
+</ion-content>

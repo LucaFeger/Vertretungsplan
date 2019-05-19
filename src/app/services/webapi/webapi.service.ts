@@ -30,4 +30,17 @@ export class WebApiService {
     return this.httpClient.post('https://api.mkg-wegberg.de/vplan.php', data, {responseType: 'text'}).toPromise();
   }
 
+  getTeacherData(username: string, password: string, key?: string): Promise<string> {
+    console.log(username + ', ' + password + ', ' + key);
+
+    const data = new FormData();
+    data.append('user_name', username);
+    data.append('user_pwd', password);
+    if (key !== undefined) {
+      data.append('common_key', key);
+    }
+
+    return this.httpClient.post('https://api.mkg-wegberg.de/teacher.php', data, {responseType: 'text'}).toPromise();
+  }
+
 }

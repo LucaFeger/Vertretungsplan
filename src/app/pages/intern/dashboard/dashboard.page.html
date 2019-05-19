@@ -38,10 +38,10 @@
     <div class="time">
       <p>{{hour}}</p>
     </div>
-    <div id='{{ "mo-"+hour }}' class="block" (click)='editLine($event)'></div>
-    <div id='{{ "di-"+hour }}' class="block" (click)="editLine($event)"></div>
-    <div id='{{ "mi-"+hour }}' class="block" (click)="editLine($event)"></div>
-    <div id='{{ "do-"+hour }}' class="block" (click)="editLine($event)"></div>
-    <div id='{{ "fr-"+hour }}' class="block" (click)="editLine($event)"></div>
+    <div id='{{ "mo-"+hour }}' class="block" (click)='editEntry($event)'></div>
+    <div id='{{ "di-"+hour }}' class="block" (click)="editEntry($event)"></div>
+    <div id='{{ "mi-"+hour }}' class="block" (click)="editEntry($event)"></div>
+    <div id='{{ "do-"+hour }}' class="block" (click)="editEntry($event)"></div>
+    <div id='{{ "fr-"+hour }}' class="block" (click)="editEntry($event)"></div>
   </div>
 </ion-content>

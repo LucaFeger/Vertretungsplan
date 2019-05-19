@@ -3,6 +3,7 @@ import { AuthenticationService } from 'src/app/services/authentication/authentic
 import { Storage } from '@ionic/storage';
 import { AlertController, Platform } from '@ionic/angular';
 import { StorageKeys } from 'src/app/enums/storagekeys.enum';
+import { EntrySetupService } from 'src/app/services/entry-setup/entry-setup.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,7 +18,7 @@ export class DashboardPage implements OnInit {
   private subscription;
 
   constructor(private authService: AuthenticationService, private storage: Storage, private alertController: AlertController
-    , private platform: Platform) { }
+    , private platform: Platform, private entrySetup: EntrySetupService) { }
 
   ngOnInit() {
     this.storage.get(StorageKeys.LINES).then((value) => {
@@ -28,6 +29,17 @@ export class DashboardPage implements OnInit {
         this.numbers = Array.from(Array(value)).map((e, i) => i + 1);
       }
     });
+  }
+
+  editEntry(event: HTMLElement) {
+    console.log('click');
+    console.log(event.innerHTML);
+    if (event.innerHTML === undefined) {
+      this.entrySetup.setup(event.id);
+    } else {
+      console.log('else');
+      // show information
+    }
   }
 
   async editLineAmount() {

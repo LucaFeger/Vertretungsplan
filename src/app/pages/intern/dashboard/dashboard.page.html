@@ -34,9 +34,10 @@
       <p>Fr.</p>
     </div>
   </div>
-  <div class="grid" *ngFor="let hour of numbers">
+  <div class="grid" *ngFor="let hour of numbers; let last = last">
+    {{loadData(last)}}
     <div class="time">
-      <p>{{hour}}</p>
+     <p>{{hour}}</p>
     </div>
     <div id='{{ "mo-"+hour }}' class="block" (click)='editEntry($event)'></div>
     <div id='{{ "di-"+hour }}' class="block" (click)="editEntry($event)"></div>

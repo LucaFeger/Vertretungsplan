@@ -7,6 +7,7 @@ import { Router, RouterEvent, NavigationEnd, NavigationStart } from '@angular/ro
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { Storage } from '@ionic/storage';
 import { StorageKeys } from './enums/storagekeys.enum';
+import { HeaderColor } from '@ionic-native/header-color/ngx';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +17,7 @@ export class AppComponent implements OnInit {
 
   pages: Array<{title: string, path: string, icon: string, top: boolean}>;
 
-  constructor(private platform: Platform, private statusBar: StatusBar, private storage: Storage,
+  constructor(private platform: Platform, private statusBar: StatusBar, private storage: Storage, private headerColor: HeaderColor,
     private authenticationService: AuthenticationService, private router: Router, private splashScreen: SplashScreen) {
       this.initializeApp();
       this.pages = [
@@ -32,6 +33,7 @@ export class AppComponent implements OnInit {
     this.platform.ready().then(() => {
       this.statusBar.styleBlackTranslucent();
       this.splashScreen.hide();
+      this.headerColor.tint("#DF1800")
     });
   }
 

@@ -8,6 +8,8 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { Storage } from '@ionic/storage';
 import { StorageKeys } from './enums/storagekeys.enum';
 import { HeaderColor } from '@ionic-native/header-color/ngx';
+import { DataService } from './services/data/data.service';
+import { DashboardPage } from './pages/intern/dashboard/dashboard.page';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +20,8 @@ export class AppComponent implements OnInit {
   pages: Array<{title: string, path: string, icon: string, top: boolean}>;
 
   constructor(private platform: Platform, private statusBar: StatusBar, private storage: Storage, private headerColor: HeaderColor,
-    private authenticationService: AuthenticationService, private router: Router, private splashScreen: SplashScreen) {
+    private authenticationService: AuthenticationService, private router: Router, private splashScreen: SplashScreen
+    , private dataService: DataService, private dashboardPage: DashboardPage) {
       this.initializeApp();
       this.pages = [
         { title: 'Startseite', path: '/intern/dashboard', icon: 'home', top: true},
@@ -43,6 +46,10 @@ export class AppComponent implements OnInit {
         this.pages.map(page => {
           return page['active'] = (event.url === page.path);
         });
+        if (event.url == '/intern/dashboard' && this.dataService.dashboardLoaded) {
+          //this.dashboardPage.loadData();
+          console.log("Switched to loaded dashboard")
+        }
       } else if (event instanceof NavigationStart) {
         if (event.url === '/login') {
           this.authenticationService.authenticationState.next(false);

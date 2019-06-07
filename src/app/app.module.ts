@@ -11,6 +11,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { IonicStorageModule } from '@ionic/storage';
 import { HeaderColor } from '@ionic-native/header-color/ngx';
+import { DashboardPage } from './pages/intern/dashboard/dashboard.page';
 
 @NgModule({
   declarations: [AppComponent],
@@ -20,6 +21,7 @@ import { HeaderColor } from '@ionic-native/header-color/ngx';
     StatusBar,
     SplashScreen,
     HeaderColor,
+    DashboardPage,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

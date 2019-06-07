@@ -9,6 +9,7 @@ export class DataService {
 
   public teacherList: Array<{}>;
   public entries;
+  public dashboardLoaded: boolean = false;
 
   constructor(private storage: Storage) { }
 

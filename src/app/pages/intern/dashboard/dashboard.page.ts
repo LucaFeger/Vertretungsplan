@@ -33,19 +33,28 @@ export class DashboardPage implements OnInit {
     }
   }
 
-  loadData(last: boolean) {
-
-    // TODO: Possible bug -> mo-9 set, resizing the grid to 8, loading the page
+  loadDataFromHTML(last: boolean) {
+    // TODO: Load after page swichting again.
     if(!last) return;
     this.counter++;
     if(this.counter < 8) return;
+    console.log("WOHOOO BEHIND COUNTER")
     if(this.dataService.entries == null) return;
-    Object.entries(this.dataService.entries).forEach(([key, value]) => {
-      document.getElementById(key).innerHTML = value["subject"] + "<br>" + value["teacher"] + "<br>" + value["room"];
-    })
+    console.log("YEAAAHHH NOT NULL")
+    this.loadData();
     this.counter = 0;
+    console.log("reseted to 0 :(")
   }
 
+  loadData() {
+    Object.entries(this.dataService.entries).forEach(([key, value]) => {
+      //if(document.getElementById(key) == null) {console.log('null'); return};
+      console.log("last element: " + document.getElementById(key))
+      document.getElementById(key).innerHTML = value["subject"] + "<br>" + value["teacher"] + "<br>" + value["room"];
+    })
+    console.log("YEAAAH DONE WITH LOADING")
+    this.dataService.dashboardLoaded = true;
+  }
   
   editEntry(event) {
     if (event.srcElement.innerHTML === "") {
@@ -98,9 +107,13 @@ export class DashboardPage implements OnInit {
     this.subscription = this.platform.backButton.subscribe(() => {
         navigator['app'].exitApp();
     });
+    console.log("entering again")
+    console.log(document)
+    this.loadData();
   }
   ionViewWillLeave() {
     this.subscription.unsubscribe();
+    console.log("will leave")
   }
 
 }

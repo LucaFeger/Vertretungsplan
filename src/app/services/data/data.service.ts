@@ -7,16 +7,17 @@ import { StorageKeys } from 'src/app/enums/storagekeys.enum';
 })
 export class DataService {
 
-  public teacherList: Array<{}>;
-  public entries;
-  public dashboardLoaded: boolean = false;
+  public teacherList: Array<Object>;
+  public entries: {};
+  public vplanData: Array<Object>;
+  public substitutes: Array<Object> = [];
 
   constructor(private storage: Storage) { }
 
 
   public addEntryToStorage(id: string, data: {}): void {
     this.storage.get(StorageKeys.ENTRIES).then(value => {
-      if(value == null) {
+      if (value == null) {
         value = {};
         value[id] = data;
         this.storage.set(StorageKeys.ENTRIES, value);
@@ -24,7 +25,14 @@ export class DataService {
         value[id] = data;
         this.storage.set(StorageKeys.ENTRIES, value);
       }
-    })
+      this.entries = value;
+    });
+  }
+
+  public removeEntryFromStorage(id: string) {
+    if (this.entries == null) {  return; }
+    delete this.entries[id];
+    this.storage.set(StorageKeys.ENTRIES, this.entries);
   }
 
 }

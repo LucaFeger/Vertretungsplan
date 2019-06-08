@@ -9,13 +9,9 @@ import { DataService } from '../data/data.service';
 export class EntrySetupService {
 
   private subjects: AlertInput[];
-  private teachers: AlertInput[];
 
   constructor(private alertController: AlertController, private dataService: DataService) {
-    this.subjects = [{type: 'radio', label: 'Mathematik', value: 'ma'}, {type: 'radio', label: 'Deutsch', value: 'd'}];
-    this.teachers = [{type: 'radio', label: 'Bültmann', value: 'BÜ'}, {type: 'radio', label: 'Horn', value: 'HN'}];
-
-    //TODO Fragen: Erst Fach (hard gecodete Liste) und dann Lehrer sortieren ODER Erst Lehrer (dynamisch) und dann dynamisch nur die Fachkürzel anzeigen
+    this.subjects = [{type: 'radio', label: 'Mathematik', value: 'M'}, {type: 'radio', label: 'Deutsch', value: 'D'}];
   }
 
   async setup(id: string) {
@@ -43,7 +39,7 @@ export class EntrySetupService {
     });
     await alert.present();
     await alert.onDidDismiss().then(data => result = data);
-    if(typeof result.data == "object" || result.role == "backdrop") return undefined;
+    if (typeof result.data === 'object' || result.role === 'backdrop') { return undefined; }
     return this.setupTeacher(id, result.data);
   }
 
@@ -68,12 +64,12 @@ export class EntrySetupService {
             }
           }
         }
-      ] 
+      ]
     });
     await alert.present();
     await alert.onDidDismiss().then(data => result = data);
-    if(typeof result.data == "object" || result.role == "backdrop") return undefined;
-    return this.setupRoom(id, subject, result.data)
+    if (typeof result.data === 'object' || result.role === 'backdrop') { return undefined; }
+    return this.setupRoom(id, subject, result.data);
   }
 
   private async setupRoom(id: string, subject: string, teacher: string) {
@@ -89,20 +85,20 @@ export class EntrySetupService {
         {
           text: 'Abbrechen',
           role: 'cancel',
-          handler: (data) => {alert.dismiss("-1")}
+          handler: (data) => { alert.dismiss('-1'); }
         },
         {
           text: 'Fertigstellen',
           handler: (data) => {
-            if(!isNaN(+data.value) && (data.value + "").length === 3) {
+            if (!isNaN(+data.value) && (data.value + '').length === 3) {
               alert.dismiss(+data.value);
               return true;
             } else {
-              if (data.value === 'SP1' || data.value === 'SP2' ||data.value === 'SP3') {
+              if (data.value === 'SP1' || data.value === 'SP2' || data.value === 'SP3') {
                 alert.dismiss(data.value);
                 return true;
               }
-              alert.message = 'Bitte gib eine Nummer an oder eine der folgenden Optionen ein: SP1, SP2, SP3'
+              alert.message = 'Bitte gib eine Nummer an oder eine der folgenden Optionen ein: SP1, SP2, SP3';
               return false;
             }
             // bLNtTmmmPdBZwrB5trgQ
@@ -112,8 +108,8 @@ export class EntrySetupService {
     });
     await alert.present();
     await alert.onDidDismiss().then(data => result = data);
-    if(typeof result.data == "object" || result.role == "backdrop") return undefined;
-    return {id: id, subject: subject, teacher: teacher, room: result.data}
+    if (typeof result.data === 'object' || result.role === 'backdrop') { return undefined; }
+    return {id: id, subject: subject, teacher: teacher, room: result.data};
   }
 
 }

@@ -35,14 +35,13 @@
     </div>
   </div>
   <div class="grid" *ngFor="let hour of numbers; let last = last">
-    {{loadDataFromHTML(last)}}
     <div class="time">
      <p>{{hour}}</p>
     </div>
-    <div id='{{ "mo-"+hour }}' class="block" (click)='editEntry($event)'></div>
-    <div id='{{ "di-"+hour }}' class="block" (click)="editEntry($event)"></div>
-    <div id='{{ "mi-"+hour }}' class="block" (click)="editEntry($event)"></div>
-    <div id='{{ "do-"+hour }}' class="block" (click)="editEntry($event)"></div>
-    <div id='{{ "fr-"+hour }}' class="block" (click)="editEntry($event)"></div>
+    <div id='{{ "1-"+hour }}' class="block" (click)='editEntry($event)'></div>
+    <div id='{{ "2-"+hour }}' class="block" (click)="editEntry($event)"></div>
+    <div id='{{ "3-"+hour }}' class="block" (click)="editEntry($event)"></div>
+    <div id='{{ "4-"+hour }}' class="block" (click)="editEntry($event)"></div>
+    <div id='{{ "5-"+hour }}' class="block" (click)="editEntry($event)"></div>
   </div>
 </ion-content>

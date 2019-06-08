@@ -5,6 +5,8 @@ import { AlertController, Platform } from '@ionic/angular';
 import { StorageKeys } from 'src/app/enums/storagekeys.enum';
 import { EntrySetupService } from 'src/app/services/entry-setup/entry-setup.service';
 import { DataService } from 'src/app/services/data/data.service';
+import { PlanTypes } from 'src/app/enums/plantypes.enum';
+import { InfoalertService } from 'src/app/services/infoalert/infoalert.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,10 +23,11 @@ export class DashboardPage implements OnInit {
   public counter = 0;
 
   constructor(private authService: AuthenticationService, private storage: Storage, private alertController: AlertController
-    , private platform: Platform, private entrySetup: EntrySetupService, private dataService: DataService) { }
+    , private platform: Platform, private entrySetup: EntrySetupService, private dataService: DataService
+    , private infoAlert: InfoalertService) { }
 
   async ngOnInit() {
-    const value = await this.storage.get(StorageKeys.LINES)
+    const value = await this.storage.get(StorageKeys.LINES);
     if (value == null) {
       this.storage.set(StorageKeys.LINES, 8);
       this.numbers = Array.from(Array(8)).map((e, i) => i + 1);
@@ -33,41 +36,55 @@ export class DashboardPage implements OnInit {
     }
   }
 
-  loadDataFromHTML(last: boolean) {
-    // TODO: Load after page swichting again.
-    if(!last) return;
-    this.counter++;
-    if(this.counter < 8) return;
-    console.log("WOHOOO BEHIND COUNTER")
-    if(this.dataService.entries == null) return;
-    console.log("YEAAAHHH NOT NULL")
-    this.loadData();
-    this.counter = 0;
-    console.log("reseted to 0 :(")
-  }
-
   loadData() {
     Object.entries(this.dataService.entries).forEach(([key, value]) => {
-      //if(document.getElementById(key) == null) {console.log('null'); return};
-      console.log("last element: " + document.getElementById(key))
-      document.getElementById(key).innerHTML = value["subject"] + "<br>" + value["teacher"] + "<br>" + value["room"];
-    })
-    console.log("YEAAAH DONE WITH LOADING")
-    this.dataService.dashboardLoaded = true;
+      if (document.getElementById(key) == null) { return; }
+      document.getElementById(key).innerHTML = value['subject'] + '<br>' + value['teacher'] + '<br>' + value['room'];
+      const matches = this.dataService.vplanData.filter(vplan =>
+        vplan['oldTeacher'] === value['teacher']
+          && vplan['oldSubject'] === value['subject']
+          && key.split('-')[1] === vplan['hour']
+          && this.isDateValid(vplan['date'])
+          && this.getDayInWeek(vplan['date']) === +key.split('-')[0]
+      );
+      if (matches.length > 0) {
+        const vplan = matches[0];
+        const object = {'subject': value['subject'], 'room': value['room'], 'teacher': value['teacher'], 'info': vplan['info']};
+        if (vplan['info'] === 'eigenverantwortliches Arbeiten') {
+          Object.assign(object, {'key': key, 'type': PlanTypes.CANCELLED});
+          document.getElementById(key).classList.add('red');
+        } else if (vplan['oldRoom'] !== vplan['newRoom']) {
+          // Raumvertretung
+          Object.assign(object, {'key': key, 'type': PlanTypes.ROOM, 'newRoom': vplan['newRoom']});
+          document.getElementById(key).classList.add('yellow');
+        } else if (vplan['oldTeacher'] !== vplan['newTeacher']) {
+          Object.assign(object, {'key': key, 'type': PlanTypes.SUBSTITUTE, 'newTeacher': vplan['newTeacher']});
+          document.getElementById(key).classList.add('green');
+        }
+
+        this.dataService.substitutes.push(object);
+      }
+    });
   }
-  
+
   editEntry(event) {
-    if (event.srcElement.innerHTML === "") {
-      let result = this.entrySetup.setup(event.srcElement.id);
+    if (event.srcElement.innerHTML === '') {
+      const result = this.entrySetup.setup(event.srcElement.id);
       result.then(data => {
-        if (data == undefined) return;
-        document.getElementById(data.id).innerHTML = data.subject + "<br>" + data.teacher + "<br>" + data.room;
+        if (data === undefined) { return; }
+        document.getElementById(data.id).innerHTML = data.subject + '<br>' + data.teacher + '<br>' + data.room;
         delete data.id;
         this.dataService.addEntryToStorage(event.srcElement.id, data);
-      })
+      });
     } else {
-      console.log('else');
-      // show information
+      const list = this.dataService.substitutes.filter(temp => temp['key'] === event.srcElement.id);
+      if (list.length > 0) {
+        this.infoAlert.showDetailedAlert(list[0]);
+      } else {
+        const data = this.dataService.entries[event.srcElement.id];
+        data['key'] = event.srcElement.id;
+        this.infoAlert.showNormalAlert(data);
+      }
     }
   }
 
@@ -103,17 +120,48 @@ export class DashboardPage implements OnInit {
     await alert.present();
   }
 
-  ionViewDidEnter() {
+  async ionViewDidEnter() {
     this.subscription = this.platform.backButton.subscribe(() => {
         navigator['app'].exitApp();
     });
-    console.log("entering again")
-    console.log(document)
+    const value = await this.storage.get(StorageKeys.LINES);
+    if (value == null) {
+      this.storage.set(StorageKeys.LINES, 8);
+      this.numbers = Array.from(Array(8)).map((e, i) => i + 1);
+    } else {
+      this.numbers = Array.from(Array(value)).map((e, i) => i + 1);
+    }
+
     this.loadData();
   }
+
   ionViewWillLeave() {
     this.subscription.unsubscribe();
-    console.log("will leave")
+  }
+
+  public isDateValid(dateString: string): boolean {
+    const date = new Date();
+
+    const day = dateString.slice(-2);
+    const month = dateString.slice(4, 6);
+    const year = dateString.slice(4);
+
+    const dayDifference = Math.floor((Date.UTC(+year, +month - 1, +day)
+    - Date.now()) / (1000 * 60 * 60 * 24)); // convert timestamp difference to days
+
+    if (date.getDay() === 0 || date.getDay() === 6) { // Sunday or Saturday
+      return date.getDay() === 0 ? (dayDifference >= 1 && dayDifference <= 5) : (dayDifference >= 2 && dayDifference <= 6);
+    } else {
+      return dayDifference <= 5 - date.getDay();
+    }
+  }
+
+  public getDayInWeek(dateString: string): number {
+    const day = +dateString.slice(-2);
+    const month = +dateString.slice(4, 6);
+    const year = +dateString.slice(0, 4);
+
+    return new Date(year, month - 1, day).getDay();
   }
 
 }

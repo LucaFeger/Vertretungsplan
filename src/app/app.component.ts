@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
     this.platform.ready().then(() => {
       this.statusBar.styleBlackTranslucent();
       this.splashScreen.hide();
-      this.headerColor.tint("#DF1800")
+      this.headerColor.tint('#DF1800');
     });
   }
 
@@ -46,10 +46,6 @@ export class AppComponent implements OnInit {
         this.pages.map(page => {
           return page['active'] = (event.url === page.path);
         });
-        if (event.url == '/intern/dashboard' && this.dataService.dashboardLoaded) {
-          //this.dashboardPage.loadData();
-          console.log("Switched to loaded dashboard")
-        }
       } else if (event instanceof NavigationStart) {
         if (event.url === '/login') {
           this.authenticationService.authenticationState.next(false);

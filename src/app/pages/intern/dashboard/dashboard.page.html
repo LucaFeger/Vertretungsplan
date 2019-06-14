@@ -8,12 +8,16 @@
     </ion-buttons>
     <ion-title>
       Startseite <br>
-      <small>{{ dateObject | date:'w' }}. KW</small>
+      <small>{{ dateObject | date:'w' }}. KW ({{ this.dataService.updateTime }})</small>
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <div class="grid">
     <div class="heading">
       <p>Stunde</p>
@@ -34,7 +38,7 @@
       <p>Fr.</p>
     </div>
   </div>
-  <div class="grid" *ngFor="let hour of numbers; let last = last">
+  <div class="grid" *ngFor="let hour of numbers">
     <div class="time">
      <p>{{hour}}</p>
     </div>
@@ -45,3 +49,9 @@
     <div id='{{ "5-"+hour }}' class="block" (click)="editEntry($event)"></div>
   </div>
 </ion-content>
+
+<ion-footer style="text-align: center">
+  <ion-toolbar *ngIf="this.dataService.duplicateWarning">
+    Es wurden fehlerhafte Einträge gefunden. <br>Bitte prüfe den Aushang!
+  </ion-toolbar>
+</ion-footer>

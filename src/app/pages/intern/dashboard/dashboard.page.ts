@@ -7,6 +7,7 @@ import { EntrySetupService } from 'src/app/services/entry-setup/entry-setup.serv
 import { DataService } from 'src/app/services/data/data.service';
 import { PlanTypes } from 'src/app/enums/plantypes.enum';
 import { InfoalertService } from 'src/app/services/infoalert/infoalert.service';
+import { WebApiService } from 'src/app/services/webapi/webapi.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,7 +25,7 @@ export class DashboardPage implements OnInit {
 
   constructor(private authService: AuthenticationService, private storage: Storage, private alertController: AlertController
     , private platform: Platform, private entrySetup: EntrySetupService, private dataService: DataService
-    , private infoAlert: InfoalertService) { }
+    , private infoAlert: InfoalertService, private webApi: WebApiService) { }
 
   async ngOnInit() {
     const value = await this.storage.get(StorageKeys.LINES);
@@ -37,6 +38,7 @@ export class DashboardPage implements OnInit {
   }
 
   loadData() {
+    this.dataService.substitutes = [];
     Object.entries(this.dataService.entries).forEach(([key, value]) => {
       if (document.getElementById(key) == null) { return; }
       document.getElementById(key).innerHTML = value['subject'] + '<br>' + value['teacher'] + '<br>' + value['room'];
@@ -45,24 +47,35 @@ export class DashboardPage implements OnInit {
           && vplan['oldSubject'] === value['subject']
           && key.split('-')[1] === vplan['hour']
           && this.isDateValid(vplan['date'])
-          && this.getDayInWeek(vplan['date']) === +key.split('-')[0]
+          && this.getDayInWeek(vplan['date']) === +key.split('-')[0] // Is the day correct
       );
       if (matches.length > 0) {
-        const vplan = matches[0];
-        const object = {'subject': value['subject'], 'room': value['room'], 'teacher': value['teacher'], 'info': vplan['info']};
-        if (vplan['info'] === 'eigenverantwortliches Arbeiten') {
-          Object.assign(object, {'key': key, 'type': PlanTypes.CANCELLED});
-          document.getElementById(key).classList.add('red');
-        } else if (vplan['oldRoom'] !== vplan['newRoom']) {
-          // Raumvertretung
-          Object.assign(object, {'key': key, 'type': PlanTypes.ROOM, 'newRoom': vplan['newRoom']});
-          document.getElementById(key).classList.add('yellow');
-        } else if (vplan['oldTeacher'] !== vplan['newTeacher']) {
-          Object.assign(object, {'key': key, 'type': PlanTypes.SUBSTITUTE, 'newTeacher': vplan['newTeacher']});
-          document.getElementById(key).classList.add('green');
-        }
+        matches.forEach(vplan => { // check for duplicates
+          if (this.dataService.substitutes.filter(data => data['subject'] === value['subject'] &&
+          data['room'] === value['room'] && data['teacher'] === value['teacher'] && Math.abs(+data['hour'] - +key.split('-')[1]) !== 1)
+          .length > 0) {
+            this.dataService.duplicateWarning = true;
+            return;
+          }
 
-        this.dataService.substitutes.push(object);
+          const object = {subject: value['subject'], room: value['room'], teacher: value['teacher'], info: vplan['info']
+          , hour: vplan['hour']};
+          if (vplan['type'] === 'eigenverantwortliches Arbeiten') {
+            Object.assign(object, {'key': key, 'type': PlanTypes.CANCELLED});
+            document.getElementById(key).classList.add('red');
+          } else if (vplan['type'] === 'Klausur') {
+              return; // ignore due to time
+          } else if (vplan['oldRoom'] !== vplan['newRoom'] || vplan['type'] === 'Raum-Vtr.') {
+            // Raumvertretung
+            Object.assign(object, {'key': key, 'type': PlanTypes.ROOM, 'newRoom': vplan['newRoom']});
+            document.getElementById(key).classList.add('yellow');
+          } else if (vplan['oldTeacher'] !== vplan['newTeacher']) {
+            Object.assign(object, {'key': key, 'type': PlanTypes.SUBSTITUTE, 'newTeacher': vplan['newTeacher']});
+            document.getElementById(key).classList.add('green');
+          }
+
+          this.dataService.substitutes.push(object);
+        });
       }
     });
   }
@@ -131,7 +144,6 @@ export class DashboardPage implements OnInit {
     } else {
       this.numbers = Array.from(Array(value)).map((e, i) => i + 1);
     }
-
     this.loadData();
   }
 
@@ -144,7 +156,7 @@ export class DashboardPage implements OnInit {
 
     const day = dateString.slice(-2);
     const month = dateString.slice(4, 6);
-    const year = dateString.slice(4);
+    const year = dateString.slice(0, 4);
 
     const dayDifference = Math.floor((Date.UTC(+year, +month - 1, +day)
     - Date.now()) / (1000 * 60 * 60 * 24)); // convert timestamp difference to days
@@ -162,6 +174,14 @@ export class DashboardPage implements OnInit {
     const year = +dateString.slice(0, 4);
 
     return new Date(year, month - 1, day).getDay();
+  }
+
+  public async doRefresh(event) {
+    const credentials = this.dataService.loginData;
+    const result = await this.webApi.validateCredentials(credentials.username, credentials.password, credentials.key);
+    console.log(result);
+    this.loadData();
+    event.target.complete();
   }
 
 }

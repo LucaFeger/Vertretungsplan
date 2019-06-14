@@ -12,13 +12,6 @@ export class AuthGuard implements CanActivate {
   constructor(public auth: AuthenticationService, private router: Router, private storage: Storage) {}
 
   canActivate() {
-    /**
-    const loggedIn = await this.storage.get(StorageKeys.LOGGED_IN);
-    if (loggedIn) {
-      this.auth.authenticationState.next(true);
-    }
-  */
-
     if (this.auth.isAuthenticated()) {
       return true;
     } else {

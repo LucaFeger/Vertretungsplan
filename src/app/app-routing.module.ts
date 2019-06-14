@@ -5,7 +5,6 @@ import { AuthGuard } from './guards/auth.guard';
 const routes: Routes = [
   { path: '', redirectTo: 'intern/dashboard', pathMatch: 'full' },
   { path: 'login', loadChildren: './pages/public/login/login.module#LoginPageModule' },
-  { path: 'dashboard', loadChildren: './pages/intern/dashboard/dashboard.module#DashboardPageModule' },
   { path: 'intern', loadChildren: './pages/intern/intern-routing.module#InternRoutingModule', canActivate: [AuthGuard] }
 ];
 

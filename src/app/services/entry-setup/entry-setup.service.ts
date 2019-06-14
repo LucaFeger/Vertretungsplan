@@ -11,7 +11,26 @@ export class EntrySetupService {
   private subjects: AlertInput[];
 
   constructor(private alertController: AlertController, private dataService: DataService) {
-    this.subjects = [{type: 'radio', label: 'Mathematik', value: 'M'}, {type: 'radio', label: 'Deutsch', value: 'D'}];
+    this.subjects = [{type: 'radio', label: 'Biologie', value: 'BI'}, {type: 'radio', label: 'Chemie', value: 'CH'},
+    {type: 'radio', label: 'Deutsch', value: 'D'}, {type: 'radio', label: 'Englisch', value: 'E'},
+    {type: 'radio', label: 'Erdkunde ', value: 'EK'}, {type: 'radio', label: 'Evangelische Religion', value: 'ER'},
+    {type: 'radio', label: 'Französisch', value: 'F'}, {type: 'radio', label: 'Geschichte', value: 'G'},
+    {type: 'radio', label: 'Informatik', value: 'IF'}, {type: 'radio', label: 'Katholische Religion', value: 'KR'},
+    {type: 'radio', label: 'Kunst', value: 'KU'}, {type: 'radio', label: 'Latein', value: 'L'},
+    {type: 'radio', label: 'Literatur', value: 'LI'}, {type: 'radio', label: 'Mathematik', value: 'MA'},
+    {type: 'radio', label: 'Musik', value: 'MU'}, {type: 'radio', label: 'Niederländisch', value: 'N'},
+    {type: 'radio', label: 'Pädagogik', value: 'PA'}, {type: 'radio', label: 'Physik', value: 'PH'},
+    {type: 'radio', label: 'Philosophie', value: 'PL'}, {type: 'radio', label: 'Sport', value: 'SP'},
+    {type: 'radio', label: 'Sozialwissenschaften', value: 'SW'}];
+    if (this.dataService.isTeacher) {
+      this.subjects.push({type: 'radio', label: 'Elternsprechstunde', value: 'ESP'},
+      {type: 'radio', label: 'Ergänzungsstunde', value: 'EZ'},
+      {type: 'radio', label: 'Junior-Ingenieur-Akademie', value: 'JIA'}, {type: 'radio', label: 'Präsenzbereitschaft', value: 'PB'},
+      {type: 'radio', label: 'Politik', value: 'PK'}, {type: 'radio', label: 'Praktische Philosophie', value: 'PP'},
+      {type: 'radio', label: 'Schulleitungsrunde', value: 'ESL'}, {type: 'radio', label: 'Schwimmen', value: 'SCH'},
+      {type: 'radio', label: 'Soziales Lernen', value: 'SL'}, {type: 'radio', label: 'Sprachförderung', value: 'SPFÖ'},
+      {type: 'radio', label: 'Vertretungsbereitschaft', value: 'VB'});
+    }
   }
 
   async setup(id: string) {
@@ -45,9 +64,15 @@ export class EntrySetupService {
 
   private async setupTeacher(id: string, subject: string) {
     let result;
+
+    let teacherShortcuts = this.dataService.rawTeacherList.filter(rawTeacher => rawTeacher['subjects'].includes(subject))
+    .map(teacher => teacher['shortcut']);
+    if (teacherShortcuts.length === 0) {
+      teacherShortcuts = this.dataService.rawTeacherList.map(teacher => teacher['shortcut']);
+    }
     const alert = await this.alertController.create({
       header: 'Lehrer auswählen',
-      inputs: this.dataService.teacherList,
+      inputs: this.dataService.teacherList.filter(teacher => teacherShortcuts.includes(teacher['value'])),
       buttons: [
         {
           text: 'Abbrechen',

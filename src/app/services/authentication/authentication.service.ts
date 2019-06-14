@@ -15,7 +15,6 @@ export class AuthenticationService {
   authenticationState: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
    login() {
-     // TODO: Check provided login data
      this.authenticationState.next(true);
      this.router.navigate(['intern', 'dashboard'], { replaceUrl: true });
      this.storage.set(StorageKeys.LOGGED_IN, true);
